@@ -1,0 +1,78 @@
+
+# coding: utf-8
+
+# In[4]:
+
+import xlrd
+
+
+# In[5]:
+
+#read the excel tab
+data = xlrd.open_workbook('sept_sent_new.xlsx') 
+
+
+# In[6]:
+
+table1 = data.sheets()[0]
+nrows1 = table1.nrows
+
+
+# In[7]:
+
+#initial variables
+ftext = open("text","w")
+furl2wav = open("url.sh","w")
+fwav = open("wav.scp","w")
+fscore = open("score.txt","w")
+futt2spk = open("utt2spk","w")
+key_set = set()
+filename = "sept_sent"
+wav_address = "/data2/speech_workspace/xiaonan.zhi/data_process/" + filename + "/wav_data/"
+sy3_address = "/data2/speech_workspace/xiaonan.zhi/data_process/" + filename + "/sy3/"
+
+
+furl2wav.write("mkdir wav_address" + "\n")
+
+
+# In[12]:
+
+for r1 in range(1,nrows1):
+    url = table1.row(r1)[2].value
+    if len(url) < 1:
+        continue
+    key = url[url.rfind("/")+1:url.rfind(".")]
+    if key in key_set:
+        continue
+    key_set.add(key)
+    score = int(table1.row(r1)[1].value)
+    text = table1.row(r1)[0].value.rstrip("\n").encode('ascii','ignore')
+    text = text.upper()
+    text = text.replace(',',' ')
+    text = text.replace('.',' ')
+    text = text.replace('?',' ')
+    text = text.replace('!',' ')
+    text = text.replace('"',' ')
+    text = text.replace("\n",' ')
+    ftext.write(key+" "+text+"\n")
+    fwav.write(key+ " " + address + key + ".wav" + "\n")
+    furl2wav.write("wget" + " " +url + " " + "-P" + " " + sy3_address + "\n")
+    furl2wav.write("sox -t mp3 "+sy3_address+key+".sy3 "+ "-r 16000 -e signed-integer -b 16 -c 1 " + wav_address+key+".wav" + "\n")
+    fscore.write(key + " " + str(score)+ "\n")
+    futt2spk.write(key + " " + key + "\n")
+    
+
+
+# In[13]:
+
+ftext.close()
+furl2wav.close()
+fwav.close()
+fscore.close()
+futt2spk.close()
+
+
+# In[ ]:
+
+
+
